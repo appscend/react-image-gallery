@@ -221,38 +221,73 @@ const ImageGallery = React.createClass({
       let alignment = this._getAlignment(index);
       if (this.props.lazyLoad) {
         if (alignment) {
+          if (this.props.type && this.props.type === '3d') {
+            slides.push(
+              <div
+                key={index}
+                className={'image-gallery-slide ' + alignment}>
+                <iframe src={item.original} className="videoIframe"></iframe>
+              </div>
+            );
+          } else {
+            slides.push(
+              <div
+                key={index}
+                className={'image-gallery-slide ' + alignment}>
+                <img src={item.original}/>
+              </div>
+            );
+          }
+        }
+      } else {
+        if (this.props.type && this.props.type === '3d') {
           slides.push(
             <div
               key={index}
-              className={'image-gallery-slide ' + alignment}>
+              className="image-gallery-slide">
+              <iframe src={item.original} className="videoIframe"></iframe>
+            </div>
+          );
+        } else {
+          slides.push(
+            <div
+              key={index}
+              className="image-gallery-slide">
               <img src={item.original}/>
             </div>
           );
         }
-      } else {
-        slides.push(
-          <div
-            key={index}
-            className={'image-gallery-slide ' + alignment}>
-            <img src={item.original}/>
-          </div>
-        );
       }
 
       if (this.props.showThumbnails) {
-        thumbnails.push(
-          <a
-            key={index}
-            className={
-              'image-gallery-thumbnail ' + (
-                currentIndex === index ? 'active' : '')}
+        if (this.props.type && this.props.type === '3d') {
+          thumbnails.push(
+            <a
+              key={index}
+              className={
+                'image-gallery-thumbnail ' + (
+                  currentIndex === index ? 'active' : '')}
 
-            onTouchStart={this.slideToIndex.bind(this, index)}
-            onClick={this.slideToIndex.bind(this, index)}>
+              onTouchStart={this.slideToIndex.bind(this, index)}
+              onClick={this.slideToIndex.bind(this, index)}>
+              <iframe src={item.thumbnail}></iframe>
+            </a>
+          );
+        } else {
+          thumbnails.push(
+            <a
+              key={index}
+              className={
+                'image-gallery-thumbnail ' + (
+                  currentIndex === index ? 'active' : '')}
 
-            <img src={item.thumbnail}/>
-          </a>
-        );
+              onTouchStart={this.slideToIndex.bind(this, index)}
+              onClick={this.slideToIndex.bind(this, index)}>
+
+              <img src={item.thumbnail}/>
+            </a>
+          );
+        }
       }
 
       if (this.props.showBullets) {

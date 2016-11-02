@@ -228,35 +228,68 @@ var ImageGallery = _react2['default'].createClass({
       var alignment = _this2._getAlignment(index);
       if (_this2.props.lazyLoad) {
         if (alignment) {
+          if (_this2.props.type && _this2.props.type === '3d') {
+            slides.push(_react2['default'].createElement(
+              'div',
+              {
+                key: index,
+                className: 'image-gallery-slide ' + alignment },
+              _react2['default'].createElement('iframe', { src: item.original, className: 'videoIframe' })
+            ));
+          } else {
+            slides.push(_react2['default'].createElement(
+              'div',
+              {
+                key: index,
+                className: 'image-gallery-slide ' + alignment },
+              _react2['default'].createElement('img', { src: item.original })
+            ));
+          }
+        }
+      } else {
+        if (_this2.props.type && _this2.props.type === '3d') {
           slides.push(_react2['default'].createElement(
             'div',
             {
               key: index,
-              className: 'image-gallery-slide ' + alignment },
+              className: 'image-gallery-slide' },
+            _react2['default'].createElement('iframe', { src: item.original, className: 'videoIframe' })
+          ));
+        } else {
+          slides.push(_react2['default'].createElement(
+            'div',
+            {
+              key: index,
+              className: 'image-gallery-slide' },
             _react2['default'].createElement('img', { src: item.original })
           ));
         }
-      } else {
-        slides.push(_react2['default'].createElement(
-          'div',
-          {
-            key: index,
-            className: 'image-gallery-slide ' + alignment },
-          _react2['default'].createElement('img', { src: item.original })
-        ));
       }
 
       if (_this2.props.showThumbnails) {
-        thumbnails.push(_react2['default'].createElement(
-          'a',
-          {
-            key: index,
-            className: 'image-gallery-thumbnail ' + (currentIndex === index ? 'active' : ''),
+        if (_this2.props.type && _this2.props.type === '3d') {
+          thumbnails.push(_react2['default'].createElement(
+            'a',
+            {
+              key: index,
+              className: 'image-gallery-thumbnail ' + (currentIndex === index ? 'active' : ''),
 
-            onTouchStart: _this2.slideToIndex.bind(_this2, index),
-            onClick: _this2.slideToIndex.bind(_this2, index) },
-          _react2['default'].createElement('img', { src: item.thumbnail })
-        ));
+              onTouchStart: _this2.slideToIndex.bind(_this2, index),
+              onClick: _this2.slideToIndex.bind(_this2, index) },
+            _react2['default'].createElement('iframe', { src: item.thumbnail })
+          ));
+        } else {
+          thumbnails.push(_react2['default'].createElement(
+            'a',
+            {
+              key: index,
+              className: 'image-gallery-thumbnail ' + (currentIndex === index ? 'active' : ''),
+
+              onTouchStart: _this2.slideToIndex.bind(_this2, index),
+              onClick: _this2.slideToIndex.bind(_this2, index) },
+            _react2['default'].createElement('img', { src: item.thumbnail })
+          ));
+        }
       }
 
       if (_this2.props.showBullets) {

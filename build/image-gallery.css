@@ -8,7 +8,8 @@
 
 .image-gallery-content {
   position: relative; }
-  .image-gallery-content .image-gallery-left-nav, .image-gallery-content .image-gallery-right-nav {
+  .image-gallery-content .image-gallery-left-nav,
+  .image-gallery-content .image-gallery-right-nav {
     color: #fff;
     cursor: pointer;
     font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
@@ -20,10 +21,12 @@
     transition: all .2s ease-out;
     z-index: 1; }
     @media (max-width: 768px) {
-      .image-gallery-content .image-gallery-left-nav, .image-gallery-content .image-gallery-right-nav {
+      .image-gallery-content .image-gallery-left-nav,
+      .image-gallery-content .image-gallery-right-nav {
         font-size: 3.4em; } }
     @media (min-width: 768px) {
-      .image-gallery-content .image-gallery-left-nav:hover, .image-gallery-content .image-gallery-right-nav:hover {
+      .image-gallery-content .image-gallery-left-nav:hover,
+      .image-gallery-content .image-gallery-right-nav:hover {
         color: #337ab7; } }
   .image-gallery-content .image-gallery-left-nav {
     left: 0; }
