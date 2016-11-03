@@ -225,7 +225,7 @@ const ImageGallery = React.createClass({
             slides.push(
               <div
                 key={index}
-                className={'image-gallery-slide ' + alignment}>
+                className={'image-gallery-slide video ' + alignment}>
                 <iframe src={item.original} className="videoIframe"></iframe>
               </div>
             );
@@ -244,7 +244,7 @@ const ImageGallery = React.createClass({
           slides.push(
             <div
               key={index}
-              className="image-gallery-slide">
+              className="image-gallery-slide video">
               <iframe src={item.original} className="videoIframe"></iframe>
             </div>
           );
@@ -265,7 +265,7 @@ const ImageGallery = React.createClass({
             <a
               key={index}
               className={
-                'image-gallery-thumbnail ' + (
+                'image-gallery-thumbnail video ' + (
                   currentIndex === index ? 'active' : '')}
 
               onTouchStart={this.slideToIndex.bind(this, index)}

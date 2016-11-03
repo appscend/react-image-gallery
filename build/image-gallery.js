@@ -233,7 +233,7 @@ var ImageGallery = _react2['default'].createClass({
               'div',
               {
                 key: index,
-                className: 'image-gallery-slide ' + alignment },
+                className: 'image-gallery-slide video ' + alignment },
               _react2['default'].createElement('iframe', { src: item.original, className: 'videoIframe' })
             ));
           } else {
@@ -252,7 +252,7 @@ var ImageGallery = _react2['default'].createClass({
             'div',
             {
               key: index,
-              className: 'image-gallery-slide' },
+              className: 'image-gallery-slide video' },
             _react2['default'].createElement('iframe', { src: item.original, className: 'videoIframe' })
           ));
         } else {
@@ -272,7 +272,7 @@ var ImageGallery = _react2['default'].createClass({
             'a',
             {
               key: index,
-              className: 'image-gallery-thumbnail ' + (currentIndex === index ? 'active' : ''),
+              className: 'image-gallery-thumbnail video ' + (currentIndex === index ? 'active' : ''),
 
               onTouchStart: _this2.slideToIndex.bind(_this2, index),
               onClick: _this2.slideToIndex.bind(_this2, index) },
