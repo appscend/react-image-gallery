@@ -25,7 +25,8 @@ var ImageGallery = _react2['default'].createClass({
     autoPlay: _react2['default'].PropTypes.bool,
     lazyLoad: _react2['default'].PropTypes.bool,
     slideInterval: _react2['default'].PropTypes.number,
-    onSlide: _react2['default'].PropTypes.func
+    onSlide: _react2['default'].PropTypes.func,
+    startIndex: _react2['default'].PropTypes.number
   },
 
   getDefaultProps: function getDefaultProps() {
@@ -34,13 +35,14 @@ var ImageGallery = _react2['default'].createClass({
       showThumbnails: true,
       showBullets: false,
       autoPlay: false,
-      slideInterval: 4000
+      slideInterval: 4000,
+      startIndex: 0
     };
   },
 
   getInitialState: function getInitialState() {
     return {
-      currentIndex: 0,
+      currentIndex: this.props.startIndex,
       thumbnailsTranslateX: 0,
       containerWidth: 0
     };
