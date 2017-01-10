@@ -1,150 +1,325 @@
-'use strict';
+import React from 'react';
+import ReactDOM from 'react-dom';
 
-import React from 'react/addons';
-import ImageGallery from '../src/ImageGallery.react';
+import ImageGallery from '../src/ImageGallery';
 
-const App = React.createClass({
+const PREFIX_URL = 'https://raw.githubusercontent.com/xiaolin/react-image-gallery/master/static/';
 
-  mixins: [React.addons.LinkedStateMixin],
+class App extends React.Component {
 
-  getInitialState() {
-    return {
-      isPlaying: false,
-      slideInterval: 4000,
-      showThumbnails: true,
+  constructor() {
+    super();
+    this.state = {
+      showIndex: false,
+      slideOnThumbnailHover: false,
       showBullets: true,
-      currentIndex: null
+      infinite: true,
+      showThumbnails: true,
+      showFullscreenButton: true,
+      showGalleryFullscreenButton: true,
+      showPlayButton: true,
+      showGalleryPlayButton: true,
+      showNav: true,
+      slideDuration: 450,
+      slideInterval: 2000,
+      thumbnailPosition: 'bottom',
+      showVideo: {},
     };
-  },
+
+    this.images = [
+      {
+        original: `${PREFIX_URL}1.jpg`,
+        thumbnail: `${PREFIX_URL}1t.jpg`,
+        originalClass: 'featured-slide',
+        thumbnailClass: 'featured-thumb',
+        description: 'Custom class for slides & thumbnails'
+      },
+      {
+        thumbnail: `${PREFIX_URL}3v.jpg`,
+        original: `${PREFIX_URL}3v.jpg`,
+        embedUrl: 'https://www.youtube.com/embed/iNJdPyoqt8U?autoplay=1&showinfo=0',
+        description: 'Render custom slides within the gallery',
+        renderItem: this._renderVideo.bind(this)
+      },
+      {
+        thumbnail: `${PREFIX_URL}4v.jpg`,
+        original: `${PREFIX_URL}4v.jpg`,
+        embedUrl: 'https://www.youtube.com/embed/4pSzhZ76GdM?autoplay=1&showinfo=0',
+        renderItem: this._renderVideo.bind(this)
+      }
+    ].concat(this._getStaticImages());
+  }
 
   componentDidUpdate(prevProps, prevState) {
-    if (this.state.slideInterval !== prevState.slideInterval) {
+    if (this.state.slideInterval !== prevState.slideInterval ||
+        this.state.slideDuration !== prevState.slideDuration) {
       // refresh setInterval
-      this._pauseSlider();
-      this._playSlider();
+      this._imageGallery.pause();
+      this._imageGallery.play();
     }
-  },
+  }
 
-  _pauseSlider() {
-    if (this.refs.imageGallery) {
-      this.refs.imageGallery.pause();
-      this.setState({isPlaying: false});
+  _onImageClick(event) {
+    console.debug('clicked on image', event.target, 'at index', this._imageGallery.getCurrentIndex());
+  }
+
+  _onImageLoad(event) {
+    console.debug('loaded image', event.target.src);
+  }
+
+  _onSlide(index) {
+    this._resetVideo();
+    console.debug('slid to index', index);
+  }
+
+  _onPause(index) {
+    console.debug('paused on index', index);
+  }
+
+  _onScreenChange(fullScreenElement) {
+    console.debug('isFullScreen?', !!fullScreenElement);
+  }
+
+  _onPlay(index) {
+    console.debug('playing from index', index);
+  }
+
+  _handleInputChange(state, event) {
+    this.setState({[state]: event.target.value});
+  }
+
+  _handleCheckboxChange(state, event) {
+    this.setState({[state]: event.target.checked});
+  }
+
+  _handleThumbnailPositionChange(event) {
+    this.setState({thumbnailPosition: event.target.value});
+  }
+
+  _getStaticImages() {
+    let images = [];
+    for (let i = 2; i < 12; i++) {
+      images.push({
+        original: `${PREFIX_URL}${i}.jpg`,
+        thumbnail:`${PREFIX_URL}${i}t.jpg`
+      });
     }
-  },
 
-  _playSlider() {
-    if (this.refs.imageGallery) {
-      this.refs.imageGallery.play();
-      this.setState({isPlaying: true});
+    return images;
+  }
+
+  _resetVideo() {
+    this.setState({showVideo: {}});
+
+    if (this.state.showPlayButton) {
+      this.setState({showGalleryPlayButton: true});
     }
-  },
 
-  _handleSlide(index) {
-    this.setState({currentIndex: index});
-  },
+    if (this.state.showFullscreenButton) {
+      this.setState({showGalleryFullscreenButton: true});
+    }
+  }
+
+  _toggleShowVideo(url) {
+    this.state.showVideo[url] = !Boolean(this.state.showVideo[url]);
+    this.setState({
+      showVideo: this.state.showVideo
+    });
+
+    if (this.state.showVideo[url]) {
+      if (this.state.showPlayButton) {
+        this.setState({showGalleryPlayButton: false});
+      }
+
+      if (this.state.showFullscreenButton) {
+        this.setState({showGalleryFullscreenButton: false});
+      }
+    }
+  }
+
+  _renderVideo(item) {
+    return (
+      <div className='image-gallery-image'>
+        {
+          this.state.showVideo[item.embedUrl] ?
+            <div className='video-wrapper'>
+                <a
+                  className='close-video'
+                  onClick={this._toggleShowVideo.bind(this, item.embedUrl)}
+                >
+                </a>
+                <iframe
+                  width='560'
+                  height='315'
+                  src={item.embedUrl}
+                  frameBorder='0'
+                  allowFullScreen
+                >
+                </iframe>
+            </div>
+          :
+            <a onClick={this._toggleShowVideo.bind(this, item.embedUrl)}>
+              <div className='play-button'></div>
+              <img src={item.original}/>
+              {
+                item.description &&
+                  <span
+                    className='image-gallery-description'
+                    style={{right: '0', left: 'initial'}}
+                  >
+                    {item.description}
+                  </span>
+              }
+            </a>
+        }
+      </div>
+    );
+  }
 
   render() {
-    const images = [
-      {
-        original: 'http://lorempixel.com/1000/600/nature/1/',
-        thumbnail: 'http://lorempixel.com/250/150/nature/1/'
-      },
-      {
-        original: 'http://lorempixel.com/1000/600/nature/2/',
-        thumbnail: 'http://lorempixel.com/250/150/nature/2/'
-      },
-      {
-        original: 'http://lorempixel.com/1000/600/nature/3/',
-        thumbnail: 'http://lorempixel.com/250/150/nature/3/'
-      },
-      {
-        original: 'http://lorempixel.com/1000/600/nature/4/',
-        thumbnail: 'http://lorempixel.com/250/150/nature/4/'
-      },
-      {
-        original: 'http://lorempixel.com/1000/600/nature/5/',
-        thumbnail: 'http://lorempixel.com/250/150/nature/5/'
-      },
-      {
-        original: 'http://lorempixel.com/1000/600/nature/6/',
-        thumbnail: 'http://lorempixel.com/250/150/nature/6/'
-      },
-      {
-        original: 'http://lorempixel.com/1000/600/nature/7/',
-        thumbnail: 'http://lorempixel.com/250/150/nature/7/'
-      }
-    ];
-
     return (
 
       <section className='app'>
         <ImageGallery
-          ref='imageGallery'
-          items={images}
+          ref={i => this._imageGallery = i}
+          items={this.images}
           lazyLoad={false}
+          onClick={this._onImageClick.bind(this)}
+          onImageLoad={this._onImageLoad}
+          onSlide={this._onSlide.bind(this)}
+          onPause={this._onPause.bind(this)}
+          onScreenChange={this._onScreenChange.bind(this)}
+          onPlay={this._onPlay.bind(this)}
+          infinite={this.state.infinite}
           showBullets={this.state.showBullets}
+          showFullscreenButton={this.state.showFullscreenButton && this.state.showGalleryFullscreenButton}
+          showPlayButton={this.state.showPlayButton && this.state.showGalleryPlayButton}
           showThumbnails={this.state.showThumbnails}
+          showIndex={this.state.showIndex}
+          showNav={this.state.showNav}
+          thumbnailPosition={this.state.thumbnailPosition}
+          slideDuration={parseInt(this.state.slideDuration)}
           slideInterval={parseInt(this.state.slideInterval)}
-          autoPlay={this.state.isPlaying}
-          onSlide={this._handleSlide}
+          slideOnThumbnailHover={this.state.slideOnThumbnailHover}
         />
 
         <div className='app-sandbox'>
 
-          <h2> Playground </h2>
+          <div className='app-sandbox-content'>
+            <h2 className='app-header'>Settings</h2>
 
-          <ul>
-            <li>
-              <a
-                className={'app-button ' + (this.state.isPlaying ? 'active' : '')}
-                onClick={this._playSlider}>
-                Play
-              </a>
-            </li>
-            <li>
-            <a
-              className={'app-button ' + (!this.state.isPlaying ? 'active' : '')}
-              onClick={this._pauseSlider}>
-              Pause
-            </a>
-            </li>
-            <li>
-              <div>Slide interval</div>
-              <input
-                type='text'
-                placeholder='SlideInterval'
-                valueLink={this.linkState('slideInterval')}/>
-            </li>
-            <li>
-              <input
-                type='checkbox'
-                checkedLink={this.linkState('showBullets')}>
-                show bullets?
-              </input>
-            </li>
-            <li>
-              <input
-                type='checkbox'
-                checkedLink={this.linkState('showThumbnails')}>
-                show Thumbnails?
-              </input>
-            </li>
-            {
-              this.state.currentIndex !== null &&
-                <li>
-                  Event: slid to index {this.state.currentIndex}
-                </li>
-            }
-          </ul>
+            <ul className='app-buttons'>
+              <li>
+                <div className='app-interval-input-group'>
+                  <span className='app-interval-label'>Play Interval</span>
+                  <input
+                    className='app-interval-input'
+                    type='text'
+                    onChange={this._handleInputChange.bind(this, 'slideInterval')}
+                    value={this.state.slideInterval}/>
+                </div>
+              </li>
+
+              <li>
+                <div className='app-interval-input-group'>
+                  <span className='app-interval-label'>Slide Duration</span>
+                  <input
+                    className='app-interval-input'
+                    type='text'
+                    onChange={this._handleInputChange.bind(this, 'slideDuration')}
+                    value={this.state.slideDuration}/>
+                </div>
+              </li>
+
+              <li>
+                <div className='app-interval-input-group'>
+                  <span className='app-interval-label'>Thumbnail Bar Position</span>
+                  <select
+                    className='app-interval-input'
+                    value={this.state.thumbnailPosition}
+                    onChange={this._handleThumbnailPositionChange.bind(this)}
+                  >
+                    <option value='bottom'>Bottom</option>
+                    <option value='top'>Top</option>
+                    <option value='left'>Left</option>
+                    <option value='right'>Right</option>
+                  </select>
+                </div>
+              </li>
+            </ul>
+
+            <ul className='app-checkboxes'>
+              <li>
+                <input
+                  id='infinite'
+                  type='checkbox'
+                  onChange={this._handleCheckboxChange.bind(this, 'infinite')}
+                  checked={this.state.infinite}/>
+                  <label htmlFor='infinite'>allow infinite sliding</label>
+              </li>
+              <li>
+                <input
+                  id='show_fullscreen'
+                  type='checkbox'
+                  onChange={this._handleCheckboxChange.bind(this, 'showFullscreenButton')}
+                  checked={this.state.showFullscreenButton}/>
+                  <label htmlFor='show_fullscreen'>show fullscreen button</label>
+              </li>
+              <li>
+                <input
+                  id='show_playbutton'
+                  type='checkbox'
+                  onChange={this._handleCheckboxChange.bind(this, 'showPlayButton')}
+                  checked={this.state.showPlayButton}/>
+                  <label htmlFor='show_playbutton'>show play button</label>
+              </li>
+              <li>
+                <input
+                  id='show_bullets'
+                  type='checkbox'
+                  onChange={this._handleCheckboxChange.bind(this, 'showBullets')}
+                  checked={this.state.showBullets}/>
+                  <label htmlFor='show_bullets'>show bullets</label>
+              </li>
+              <li>
+                <input
+                  id='show_thumbnails'
+                  type='checkbox'
+                  onChange={this._handleCheckboxChange.bind(this, 'showThumbnails')}
+                  checked={this.state.showThumbnails}/>
+                  <label htmlFor='show_thumbnails'>show thumbnails</label>
+              </li>
+              <li>
+                <input
+                  id='show_navigation'
+                  type='checkbox'
+                  onChange={this._handleCheckboxChange.bind(this, 'showNav')}
+                  checked={this.state.showNav}/>
+                  <label htmlFor='show_navigation'>show navigation</label>
+              </li>
+              <li>
+                <input
+                  id='show_index'
+                  type='checkbox'
+                  onChange={this._handleCheckboxChange.bind(this, 'showIndex')}
+                  checked={this.state.showIndex}/>
+                  <label htmlFor='show_index'>show index</label>
+              </li>
+              <li>
+                <input
+                  id='slide_on_thumbnail_hover'
+                  type='checkbox'
+                  onChange={this._handleCheckboxChange.bind(this, 'slideOnThumbnailHover')}
+                  checked={this.state.slideOnThumbnailHover}/>
+                  <label htmlFor='slide_on_thumbnail_hover'>slide on thumbnail hover (desktop)</label>
+              </li>
+            </ul>
+          </div>
 
         </div>
       </section>
     );
   }
+}
 
-});
-
-
-(function() {
-  React.render(<App/>, document.getElementById('container'));
-})();
+ReactDOM.render(<App/>, document.getElementById('container'));

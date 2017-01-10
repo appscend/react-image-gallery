@@ -2,4 +2,9 @@ node_modules
 npm-debug.log
 .DS_Store
 
+build/
 example/example.js
+example/example.js.map
+demo/
+styles/css/
+yarn.lock
